@@ -1,0 +1,177 @@
+{
+  "identity": {
+    "name": "Alok Raj Dwivedi",
+    "barTitle": "ALOK RAJ DWIVEDI",
+    "terminalUser": "alok",
+    "domain": "Alok Raj Dwivedi",
+    "tagline": "I build software that learns from images.",
+    "github": "ad0883",
+    "storagePrefix": "portfolio"
+  },
+  "about": {
+    "bio": "I study computer science and engineering at SRM. My projects use machine learning to find patterns in images. I’ve built tools that add color to grayscale photos, classify brain MRI scans, and identify food in a meal.",
+    "extra": "I’m based in Modinagar, Ghaziabad, Uttar Pradesh, and speak Hindi and English.",
+    "sections": {
+      "Education": [
+        "B.Tech. in Computer Science and Engineering, 2023–2027",
+        "SRM Institute of Science and Technology, NCR Campus · CGPA 7.74/10"
+      ],
+      "Technical skills": [
+        "I code in C, C++, Python, and JavaScript and build web interfaces with HTML and CSS.",
+        "For computer vision, I use machine learning and deep learning, including convolutional neural networks. I work with PyTorch, NumPy, Pandas, and Jupyter Notebook.",
+        "I build web services with Flask and Spring Boot, work with REST APIs, and test requests in Postman. I use Git and GitHub to track changes.",
+        "I’ve studied data structures, algorithms, object-oriented programming, database management systems, and software engineering."
+      ],
+      "Publication": [
+        "AI-Guided Echocardiography for Early Pulmonary Hypertension in Neonates",
+        "The paper looks at how AI could help spot high blood pressure in the lungs of newborns using ultrasound images of the heart.",
+        "CSIR · October 2025"
+      ],
+      "Certifications": [
+        "Software Engineering Job Simulation · JPMorganChase · January 2026",
+        "Oracle Certified Foundations Associate · January 2026 – January 2028",
+        "Technology Job Simulation · Deloitte Australia · December 2025",
+        "Postman API Student Expert · September 2025"
+      ]
+    }
+  },
+  "links": [
+    {
+      "label": "Email",
+      "url": "mailto:a.dwivedi6303@gmail.com"
+    },
+    {
+      "label": "Phone",
+      "url": "tel:+917061429985"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/ad0883"
+    },
+    {
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/in/alok-dwivedi-b387b1326/"
+    }
+  ],
+  "work": [
+    {
+      "when": "2025 – present",
+      "title": "Vice President",
+      "org": "HackHound Technical Club",
+      "desc": "I manage the club’s team and coordinate its technical activities. I plan events and help run workshops."
+    }
+  ],
+  "projects": [
+    {
+      "name": "Brain Tumour Detection System",
+      "when": "Mar – May 2026",
+      "tag": "Medical imaging",
+      "desc": "Upload a brain MRI scan to see how a deep learning model classifies the image.",
+      "long": "I trained the model in PyTorch to recognize patterns in brain scans. I built a Flask web app that prepares an uploaded scan for the model and displays its prediction.",
+      "stack": [
+        "Python",
+        "PyTorch",
+        "Flask",
+        "NumPy",
+        "Pandas"
+      ],
+      "url": "https://github.com/ad0883/brianmain",
+      "shortName": "Brain MRI",
+      "shots": [
+        {
+          "file": "shots/mri-test-scan.jpg",
+          "label": "Classifying a test scan",
+          "caption": "The model classified this test scan as a pituitary tumour, matching the dataset label. It assigned that class a score of 88%.",
+          "alt": "Grayscale brain MRI from the pituitary class in the test set.",
+          "source": "https://github.com/ad0883/brianmain/blob/54baeb9acc4b4fa61906d7c8281077518bc2cd3e/data/Testing/pituitary/Te-pi_118.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Automatic Image Colorization",
+      "when": "Nov 2025 – Feb 2026",
+      "tag": "Computer vision",
+      "desc": "Takes a grayscale photo and predicts plausible colors for it.",
+      "long": "I based this project on the paper Colorful Image Colorization. I prepared the training images and built a workflow to train a convolutional neural network and use it to color new photos. I packaged the steps so the experiment can be repeated.",
+      "stack": [
+        "Python",
+        "CNN",
+        "Deep Learning"
+      ],
+      "url": "https://github.com/ad0883/colorization",
+      "shortName": "Photo colorization",
+      "shots": [
+        {
+          "file": "shots/colorization-comparison.webp",
+          "label": "Grayscale input and model output",
+          "caption": "The left side shows the original grayscale photo. On the right, the SIGGRAPH 2017 model predicts blue for the sky and green for the trees.",
+          "alt": "Two versions of the same mountain and river scene, grayscale on the left and colorized on the right.",
+          "source": "https://github.com/ad0883/colorization/blob/cedfe171a48b1e54f3f1ba01d98b0cd0e1547c97/imgs_out/saved_siggraph17.png"
+        }
+      ]
+    },
+    {
+      "name": "Health-Based Meal Scanner",
+      "when": "Oct – Dec 2025",
+      "tag": "Nutrition",
+      "desc": "Identifies a meal from a photo and uses nutrition information to suggest food choices.",
+      "long": "I connected the web interface to Python code that processes the photo. A machine learning model uses the image to identify the meal.",
+      "stack": [
+        "Python",
+        "JavaScript",
+        "HTML",
+        "CSS"
+      ],
+      "url": "https://github.com/ad0883/ML",
+      "shortName": "Meal scanner",
+      "shots": [
+        {
+          "file": "shots/meal-detection.webp",
+          "label": "Finding food in a photo",
+          "caption": "The box shows where the model detected naan in a validation photo. If someone selects the weight-loss goal, the app suggests a higher-protein, lower-fat portion.",
+          "alt": "A box labeled naan surrounds a flatbread in a saved model prediction.",
+          "source": "https://github.com/ad0883/ML/blob/9aa8c57280d09a2d1f7f853bb56ecee2d5f5c5b5/runs/detect/train3/val_batch0_pred.jpg"
+        }
+      ]
+    }
+  ],
+  "talks": [
+    {
+      "name": "Action AI Conference",
+      "when": "Oct 2024",
+      "place": "Radisson Blu, Kaushambi",
+      "desc": "I attended this C# Corner conference on how teams use AI to automate tasks, analyze data, and put models into use. Sessions also covered the ethics of that work.",
+      "photos": []
+    }
+  ],
+  "wallRepos": [
+    [
+      "ad0883/brianmain",
+      [
+        "appwrite_function/model_pytorch.py"
+      ]
+    ],
+    [
+      "ad0883/colorization",
+      [
+        "colorizers/eccv16.py"
+      ]
+    ],
+    [
+      "ad0883/ML",
+      [
+        "yolo_model.py"
+      ]
+    ]
+  ],
+  "siteStack": [
+    {
+      "name": "Vanilla JS",
+      "via": "zero-build frontend"
+    },
+    {
+      "name": "Canvas 2D",
+      "via": "intro + contribution ink"
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+{
+ "from": "2026-01-01",
+ "to": "2026-11-25",
+ "fetchedAt": "2026-11-25T19:35:26.571Z",
+ "scope": "GitHub-attributed public commit contributions per repository and month",
+ "months": [
+  {
+   "month": "2026-01",
+   "top": []
+  },
+  {
+   "month": "2026-02",
+   "top": [
+    {
+     "repo": "brain-tumor-classification",
+     "owner": "ad0883",
+     "commits": 2
+    },
+    {
+     "repo": "nullpointerx01",
+     "owner": "ad0883",
+     "commits": 2
+    },
+    {
+     "repo": "colorization",
+     "owner": "ad0883",
+     "commits": 2
+    }
+   ]
+  },
+  {
+   "month": "2026-03",
+   "top": [
+    {
+     "repo": "brianmain",
+     "owner": "ad0883",
+     "commits": 34
+    },
+    {
+     "repo": "taniya-portfolio",
+     "owner": "ad0883",
+     "commits": 12
+    },
+    {
+     "repo": "portfolio",
+     "owner": "ad0883",
+     "commits": 12
+    },
+    {
+     "repo": "nullpointerx01",
+     "owner": "ad0883",
+     "commits": 1
+    },
+    {
+     "repo": "RegSentryv2",
+     "owner": "tanishqsharmaa",
+     "commits": 1
+    }
+   ]
+  },
+  {
+   "month": "2026-04",
+   "top": [
+    {
+     "repo": "Finance-Tracker-main",
+     "owner": "ad0883",
+     "commits": 12
+    },
+    {
+     "repo": "nullpointerx01",
+     "owner": "ad0883",
+     "commits": 4
+    },
+    {
+     "repo": "portfolio",
+     "owner": "ad0883",
+     "commits": 3
+    },
+    {
+     "repo": "taniya-portfolio",
+     "owner": "ad0883",
+     "commits": 2
+    },
+    {
+     "repo": "ironman",
+     "owner": "ad0883",
+     "commits": 1
+    }
+   ]
+  },
+  {
+   "month": "2026-05",
+   "top": [
+    {
+     "repo": "freight-forwarding-phase1",
+     "owner": "ad0883",
+     "commits": 20
+    },
+    {
+     "repo": "ad0883",
+     "owner": "ad0883",
+     "commits": 5
+    },
+    {
+     "repo": "brianmain",
+     "owner": "ad0883",
+     "commits": 2
+    }
+   ]
+  },
+  {
+   "month": "2026-06",
+   "top": []
+  },
+  {
+   "month": "2026-07",
+   "top": [
+    {
+     "repo": "instagram",
+     "owner": "ad0883",
+     "commits": 12
+    }
+   ]
+  },
+  {
+   "month": "2026-08",
+   "top": []
+  },
+  {
+   "month": "2026-09",
+   "top": []
+  },
+  {
+   "month": "2026-10",
+   "top": [
+    {
+     "repo": "fact-shorts-automation",
+     "owner": "ad0883",
+     "commits": 2
+    },
+    {
+     "repo": "taniya-portfolio",
+     "owner": "ad0883",
+     "commits": 2
+    }
+   ]
+  },
+  {
+   "month": "2026-11",
+   "top": [
+    {
+     "repo": "coursra",
+     "owner": "ad0883",
+     "commits": 2
+    }
+   ]
+  }
+ ]
+}

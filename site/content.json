@@ -1,0 +1,572 @@
+{
+ "owner": "ad0883",
+ "fetchedAt": "2026-11-25T19:35:26.571Z",
+ "about": {
+  "repo": "ad0883",
+  "lines": [
+   "# Alok Raj Dwivedi",
+   "",
+   "I study computer science and engineering at SRM. My projects use machine learning to find patterns in images. I’ve built tools that add color to grayscale photos, classify brain MRI scans, and identify food in a meal.",
+   "",
+   "I’m based in Modinagar, Ghaziabad, Uttar Pradesh, and speak Hindi and English.",
+   "",
+   "[Email](mailto:a.dwivedi6303@gmail.com)",
+   "[Phone](tel:+917061429985)",
+   "[GitHub](https://github.com/ad0883)",
+   "[LinkedIn](https://www.linkedin.com/in/alok-dwivedi-b387b1326/)"
+  ],
+  "sections": {
+   "Education": [
+    "B.Tech. in Computer Science and Engineering, 2023–2027",
+    "SRM Institute of Science and Technology, NCR Campus · CGPA 7.74/10"
+   ],
+   "Technical skills": [
+    "I code in C, C++, Python, and JavaScript and build web interfaces with HTML and CSS.",
+    "For computer vision, I use machine learning and deep learning, including convolutional neural networks. I work with PyTorch, NumPy, Pandas, and Jupyter Notebook.",
+    "I build web services with Flask and Spring Boot, work with REST APIs, and test requests in Postman. I use Git and GitHub to track changes.",
+    "I’ve studied data structures, algorithms, object-oriented programming, database management systems, and software engineering."
+   ],
+   "Publication": [
+    "AI-Guided Echocardiography for Early Pulmonary Hypertension in Neonates",
+    "The paper looks at how AI could help spot high blood pressure in the lungs of newborns using ultrasound images of the heart.",
+    "CSIR · October 2025"
+   ],
+   "Certifications": [
+    "Software Engineering Job Simulation · JPMorganChase · January 2026",
+    "Oracle Certified Foundations Associate · January 2026 – January 2028",
+    "Technology Job Simulation · Deloitte Australia · December 2025",
+    "Postman API Student Expert · September 2025"
+   ]
+  }
+ },
+ "projects": [
+  {
+   "repo": "brain-tumour-detection-system",
+   "name": "Brain Tumour Detection System",
+   "when": "Mar – May 2026",
+   "detail": "I trained the model in PyTorch to recognize patterns in brain scans. I built a Flask web app that prepares an uploaded scan for the model and displays its prediction.",
+   "url": "https://github.com/ad0883/brianmain",
+   "description": "Upload a brain MRI scan to see how a deep learning model classifies the image.",
+   "tag": "Medical imaging",
+   "stars": 1,
+   "language": "Python",
+   "pushed": "2026-10-14",
+   "forks": 1,
+   "watchers": 0,
+   "issues": 1,
+   "license": null,
+   "created": "2026-03-04",
+   "branch": "main",
+   "commits": 39,
+   "files": 7297,
+   "counts": {},
+   "github": "https://github.com/ad0883/brianmain",
+   "stack": [
+    "Python",
+    "PyTorch",
+    "Flask",
+    "NumPy",
+    "Pandas"
+   ],
+   "images": [
+    {
+     "file": "shots/mri-test-scan.jpg",
+     "source": "https://github.com/ad0883/brianmain/blob/54baeb9acc4b4fa61906d7c8281077518bc2cd3e/data/Testing/pituitary/Te-pi_118.jpg",
+     "alt": "Grayscale brain MRI from the pituitary class in the test set.",
+     "label": "Classifying a test scan",
+     "caption": "The model classified this test scan as a pituitary tumour, matching the dataset label. It assigned that class a score of 88%.",
+     "xray": false
+    }
+   ],
+   "lines": [
+    "# Brain Tumour Detection System",
+    "",
+    "\u0001IMG0\u0001",
+    "",
+    "### Upload a brain MRI scan to see how a deep learning model classifies the image.",
+    "",
+    "I trained the model in PyTorch to recognize patterns in brain scans. I built",
+    "a Flask web app that prepares an uploaded scan for the model and displays",
+    "its prediction.",
+    "",
+    "Built with Python · PyTorch · Flask · NumPy · Pandas",
+    "",
+    "[Visit](https://github.com/ad0883/brianmain)"
+   ]
+  },
+  {
+   "repo": "automatic-image-colorization",
+   "name": "Automatic Image Colorization",
+   "when": "Nov 2025 – Feb 2026",
+   "detail": "I based this project on the paper Colorful Image Colorization. I prepared the training images and built a workflow to train a convolutional neural network and use it to color new photos. I packaged the steps so the experiment can be repeated.",
+   "url": "https://github.com/ad0883/colorization",
+   "description": "Takes a grayscale photo and predicts plausible colors for it.",
+   "tag": "Computer vision",
+   "stars": 0,
+   "language": "Python",
+   "pushed": "2026-02-07",
+   "forks": 0,
+   "watchers": 0,
+   "issues": 0,
+   "license": null,
+   "created": "2026-02-07",
+   "branch": "main",
+   "commits": 2,
+   "files": 21,
+   "counts": {},
+   "github": "https://github.com/ad0883/colorization",
+   "stack": [
+    "Python",
+    "CNN",
+    "Deep Learning"
+   ],
+   "images": [
+    {
+     "file": "shots/colorization-comparison.webp",
+     "source": "https://github.com/ad0883/colorization/blob/cedfe171a48b1e54f3f1ba01d98b0cd0e1547c97/imgs_out/saved_siggraph17.png",
+     "alt": "Two versions of the same mountain and river scene, grayscale on the left and colorized on the right.",
+     "label": "Grayscale input and model output",
+     "caption": "The left side shows the original grayscale photo. On the right, the SIGGRAPH 2017 model predicts blue for the sky and green for the trees.",
+     "xray": false
+    }
+   ],
+   "lines": [
+    "# Automatic Image Colorization",
+    "",
+    "\u0001IMG0\u0001",
+    "",
+    "### Takes a grayscale photo and predicts plausible colors for it.",
+    "",
+    "I based this project on the paper Colorful Image Colorization. I prepared",
+    "the training images and built a workflow to train a convolutional neural",
+    "network and use it to color new photos. I packaged the steps so the",
+    "experiment can be repeated.",
+    "",
+    "Built with Python · CNN · Deep Learning",
+    "",
+    "[Visit](https://github.com/ad0883/colorization)"
+   ]
+  },
+  {
+   "repo": "health-based-meal-scanner",
+   "name": "Health-Based Meal Scanner",
+   "when": "Oct – Dec 2025",
+   "detail": "I connected the web interface to Python code that processes the photo. A machine learning model uses the image to identify the meal.",
+   "url": "https://github.com/ad0883/ML",
+   "description": "Identifies a meal from a photo and uses nutrition information to suggest food choices.",
+   "tag": "Nutrition",
+   "stars": 0,
+   "language": "JavaScript",
+   "pushed": "2025-10-19",
+   "forks": 0,
+   "watchers": 0,
+   "issues": 0,
+   "license": null,
+   "created": "2025-09-17",
+   "branch": "main",
+   "commits": 20,
+   "files": 1770,
+   "counts": {},
+   "github": "https://github.com/ad0883/ML",
+   "stack": [
+    "Python",
+    "JavaScript",
+    "HTML",
+    "CSS"
+   ],
+   "images": [
+    {
+     "file": "shots/meal-detection.webp",
+     "source": "https://github.com/ad0883/ML/blob/9aa8c57280d09a2d1f7f853bb56ecee2d5f5c5b5/runs/detect/train3/val_batch0_pred.jpg",
+     "alt": "A box labeled naan surrounds a flatbread in a saved model prediction.",
+     "label": "Finding food in a photo",
+     "caption": "The box shows where the model detected naan in a validation photo. If someone selects the weight-loss goal, the app suggests a higher-protein, lower-fat portion.",
+     "xray": false
+    }
+   ],
+   "lines": [
+    "# Health-Based Meal Scanner",
+    "",
+    "\u0001IMG0\u0001",
+    "",
+    "### Identifies a meal from a photo and uses nutrition information to suggest food choices.",
+    "",
+    "I connected the web interface to Python code that processes the photo. A",
+    "machine learning model uses the image to identify the meal.",
+    "",
+    "Built with Python · JavaScript · HTML · CSS",
+    "",
+    "[Visit](https://github.com/ad0883/ML)"
+   ]
+  }
+ ],
+ "palettes": [
+  {
+   "name": "Blackmoney",
+   "description": "Warm paper on near-black",
+   "light": false,
+   "bg": "#0b0b0a",
+   "fg": "#ebe6db",
+   "accent": "#e7c58a",
+   "kinds": {
+    "keyword": "#7fd1a0",
+    "string": "#e6c37a",
+    "number": "#f0885b",
+    "function": "#8fd0ee",
+    "type": "#c9a0e8",
+    "comment": "#7a766a",
+    "text": "#ebe6db",
+    "ident": "#cbe0c9",
+    "member": "#8fd0ee",
+    "punct": "#86837d"
+   },
+   "cursorline": "#11110f",
+   "ansi": [
+    "#0b0b0a",
+    "#7fd1a0",
+    "#e6c37a",
+    "#f0885b",
+    "#8fd0ee",
+    "#c9a0e8",
+    "#e7c58a",
+    "#ebe6db",
+    "#7a766a",
+    "#7fd1a0",
+    "#e6c37a",
+    "#f0885b",
+    "#8fd0ee",
+    "#c9a0e8",
+    "#e7c58a",
+    "#ebe6db"
+   ],
+   "color1": "#7fd1a0"
+  },
+  {
+   "name": "Paper",
+   "description": "Light, ink on cream",
+   "light": true,
+   "bg": "#f6f2e9",
+   "fg": "#1d1c1a",
+   "accent": "#b4532a",
+   "kinds": {
+    "keyword": "#2f6f4f",
+    "string": "#8a5a1a",
+    "number": "#b4532a",
+    "function": "#2c5d8a",
+    "type": "#5a4a8a",
+    "comment": "#8c887c",
+    "text": "#1d1c1a",
+    "ident": "#22352a",
+    "member": "#2c5d8a",
+    "punct": "#7f7c77"
+   },
+   "cursorline": "#ece8e0",
+   "ansi": [
+    "#f6f2e9",
+    "#2f6f4f",
+    "#8a5a1a",
+    "#b4532a",
+    "#2c5d8a",
+    "#5a4a8a",
+    "#b4532a",
+    "#1d1c1a",
+    "#8c887c",
+    "#2f6f4f",
+    "#8a5a1a",
+    "#b4532a",
+    "#2c5d8a",
+    "#5a4a8a",
+    "#b4532a",
+    "#1d1c1a"
+   ],
+   "color1": "#2f6f4f"
+  },
+  {
+   "name": "Sora",
+   "description": "Cool steel and teal",
+   "light": false,
+   "bg": "#0b1015",
+   "fg": "#d9e4ee",
+   "accent": "#4cc9f0",
+   "kinds": {
+    "keyword": "#4cc9f0",
+    "string": "#a9d6e5",
+    "number": "#ffa94d",
+    "function": "#9fb4ff",
+    "type": "#6ee7b7",
+    "comment": "#56687a",
+    "text": "#d9e4ee",
+    "ident": "#afdcef",
+    "member": "#9fb4ff",
+    "punct": "#7c858c"
+   },
+   "cursorline": "#111820",
+   "ansi": [
+    "#0b1015",
+    "#4cc9f0",
+    "#a9d6e5",
+    "#ffa94d",
+    "#9fb4ff",
+    "#6ee7b7",
+    "#4cc9f0",
+    "#d9e4ee",
+    "#56687a",
+    "#4cc9f0",
+    "#a9d6e5",
+    "#ffa94d",
+    "#9fb4ff",
+    "#6ee7b7",
+    "#4cc9f0",
+    "#d9e4ee"
+   ],
+   "color1": "#4cc9f0"
+  },
+  {
+   "name": "Circuit",
+   "description": "Board green, phosphor on black",
+   "light": false,
+   "bg": "#07110c",
+   "fg": "#d3f0dd",
+   "accent": "#3ddc84",
+   "kinds": {
+    "keyword": "#3ddc84",
+    "string": "#ffd166",
+    "number": "#ff8f70",
+    "function": "#59c3f0",
+    "type": "#c792ea",
+    "comment": "#4d6b5a",
+    "text": "#d3f0dd",
+    "ident": "#a6eac2",
+    "member": "#59c3f0",
+    "punct": "#778c7f"
+   },
+   "cursorline": "#0b1a12",
+   "ansi": [
+    "#07110c",
+    "#3ddc84",
+    "#ffd166",
+    "#ff8f70",
+    "#59c3f0",
+    "#c792ea",
+    "#3ddc84",
+    "#d3f0dd",
+    "#4d6b5a",
+    "#3ddc84",
+    "#ffd166",
+    "#ff8f70",
+    "#59c3f0",
+    "#c792ea",
+    "#3ddc84",
+    "#d3f0dd"
+   ],
+   "color1": "#3ddc84"
+  },
+  {
+   "name": "Amber",
+   "description": "Warm amber on ink",
+   "light": false,
+   "bg": "#0e0c08",
+   "fg": "#f1e6cc",
+   "accent": "#f7931a",
+   "kinds": {
+    "keyword": "#f7931a",
+    "string": "#e8d9a0",
+    "number": "#ff7a59",
+    "function": "#ffcf6b",
+    "type": "#9ad1d4",
+    "comment": "#7a6a4a",
+    "text": "#f1e6cc",
+    "ident": "#f3cd97",
+    "member": "#ffcf6b",
+    "punct": "#8b8474"
+   },
+   "cursorline": "#15120c",
+   "ansi": [
+    "#0e0c08",
+    "#f7931a",
+    "#e8d9a0",
+    "#ff7a59",
+    "#ffcf6b",
+    "#9ad1d4",
+    "#f7931a",
+    "#f1e6cc",
+    "#7a6a4a",
+    "#f7931a",
+    "#e8d9a0",
+    "#ff7a59",
+    "#ffcf6b",
+    "#9ad1d4",
+    "#f7931a",
+    "#f1e6cc"
+   ],
+   "color1": "#f7931a"
+  },
+  {
+   "name": "Indigo",
+   "description": "Violet on deep indigo",
+   "light": false,
+   "bg": "#0d0b14",
+   "fg": "#e2dcf2",
+   "accent": "#a97bff",
+   "kinds": {
+    "keyword": "#a97bff",
+    "string": "#c7b8f0",
+    "number": "#ff9ecb",
+    "function": "#8fb2ff",
+    "type": "#7ad9d0",
+    "comment": "#665f80",
+    "text": "#e2dcf2",
+    "ident": "#d1bff6",
+    "member": "#8fb2ff",
+    "punct": "#827e8e"
+   },
+   "cursorline": "#14111e",
+   "ansi": [
+    "#0d0b14",
+    "#a97bff",
+    "#c7b8f0",
+    "#ff9ecb",
+    "#8fb2ff",
+    "#7ad9d0",
+    "#a97bff",
+    "#e2dcf2",
+    "#665f80",
+    "#a97bff",
+    "#c7b8f0",
+    "#ff9ecb",
+    "#8fb2ff",
+    "#7ad9d0",
+    "#a97bff",
+    "#e2dcf2"
+   ],
+   "color1": "#a97bff"
+  },
+  {
+   "name": "Crimson",
+   "description": "Warm terracotta and charcoal",
+   "light": false,
+   "bg": "#140a0a",
+   "fg": "#f4e3d0",
+   "accent": "#ff8f1f",
+   "kinds": {
+    "keyword": "#ff8f1f",
+    "string": "#e8c39e",
+    "number": "#ffd27a",
+    "function": "#7fd1c8",
+    "type": "#e08a96",
+    "comment": "#7a5a52",
+    "text": "#f4e3d0",
+    "ident": "#f7ca9b",
+    "member": "#7fd1c8",
+    "punct": "#8f8177"
+   },
+   "cursorline": "#1e0f0f",
+   "ansi": [
+    "#140a0a",
+    "#ff8f1f",
+    "#e8c39e",
+    "#ffd27a",
+    "#7fd1c8",
+    "#e08a96",
+    "#ff8f1f",
+    "#f4e3d0",
+    "#7a5a52",
+    "#ff8f1f",
+    "#e8c39e",
+    "#ffd27a",
+    "#7fd1c8",
+    "#e08a96",
+    "#ff8f1f",
+    "#f4e3d0"
+   ],
+   "color1": "#ff8f1f"
+  },
+  {
+   "name": "Slate",
+   "description": "Neutral graphite",
+   "light": false,
+   "bg": "#111214",
+   "fg": "#d6d8dc",
+   "accent": "#9aa5b1",
+   "kinds": {
+    "keyword": "#9ab0c4",
+    "string": "#b9c4b0",
+    "number": "#d3a37a",
+    "function": "#c4b8d6",
+    "type": "#a3c4c0",
+    "comment": "#666b73",
+    "text": "#d6d8dc",
+    "ident": "#c4ccd5",
+    "member": "#c4b8d6",
+    "punct": "#7d7f82"
+   },
+   "cursorline": "#1a1b1e",
+   "ansi": [
+    "#111214",
+    "#9ab0c4",
+    "#b9c4b0",
+    "#d3a37a",
+    "#c4b8d6",
+    "#a3c4c0",
+    "#9aa5b1",
+    "#d6d8dc",
+    "#666b73",
+    "#9ab0c4",
+    "#b9c4b0",
+    "#d3a37a",
+    "#c4b8d6",
+    "#a3c4c0",
+    "#9aa5b1",
+    "#d6d8dc"
+   ],
+   "color1": "#9ab0c4"
+  }
+ ],
+ "themeStats": {},
+ "themeThumbs": {
+  "blackmoney": "assets/themes/blackmoney.svg",
+  "paper": "assets/themes/paper.svg",
+  "sora": "assets/themes/sora.svg",
+  "circuit": "assets/themes/circuit.svg",
+  "amber": "assets/themes/amber.svg",
+  "indigo": "assets/themes/indigo.svg",
+  "crimson": "assets/themes/crimson.svg",
+  "slate": "assets/themes/slate.svg"
+ },
+ "work": [
+  {
+   "when": "2025 – present",
+   "title": "Vice President",
+   "org": "HackHound Technical Club",
+   "desc": "I manage the club’s team and coordinate its technical activities. I plan events and help run workshops."
+  }
+ ],
+ "talks": [
+  {
+   "name": "Action AI Conference",
+   "when": "Oct 2024",
+   "place": "Radisson Blu, Kaushambi",
+   "desc": "I attended this C# Corner conference on how teams use AI to automate tasks, analyze data, and put models into use. Sessions also covered the ethics of that work.",
+   "photos": []
+  }
+ ],
+ "links": [
+  {
+   "label": "Email",
+   "url": "mailto:a.dwivedi6303@gmail.com"
+  },
+  {
+   "label": "Phone",
+   "url": "tel:+917061429985"
+  },
+  {
+   "label": "GitHub",
+   "url": "https://github.com/ad0883"
+  },
+  {
+   "label": "LinkedIn",
+   "url": "https://www.linkedin.com/in/alok-dwivedi-b387b1326/"
+  }
+ ],
+ "more": []
+}

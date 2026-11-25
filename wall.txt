@@ -1,0 +1,158 @@
+"""Minimal model definition for the Appwrite function deployment."""
+import torch.nn as nn
+from torchvision import models
+class BrainTumorResNet(nn.Module):
+    def __init__(self, num_classes=4, pretrained=False, dropout_rate=0.5):
+        super().__init__()
+        weights = 'IMAGENET1K_V1' if pretrained else None
+        self.base_model = models.resnet50(weights=weights)
+        for param in self.base_model.parameters():
+            param.requires_grad = False
+        num_features = self.base_model.fc.in_features
+        self.base_model.fc = nn.Sequential(
+            nn.Linear(num_features, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout_rate),
+            nn.Linear(512, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout_rate),
+            nn.Linear(256, num_classes),
+        )
+    def forward(self, x):
+        return self.base_model(x)
+import torch
+import torch.nn as nn
+import numpy as np
+from IPython import embed
+from .base_color import *
+class ECCVGenerator(BaseColor):
+    def __init__(self, norm_layer=nn.BatchNorm2d):
+        super(ECCVGenerator, self).__init__()
+        model1=[nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1, bias=True),]
+        model1+=[nn.ReLU(True),]
+        model1+=[nn.Conv2d(64, 64, kernel_size=3, stride=2, padding=1, bias=True),]
+        model1+=[nn.ReLU(True),]
+        model1+=[norm_layer(64),]
+        model2=[nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1, bias=True),]
+        model2+=[nn.ReLU(True),]
+        model2+=[nn.Conv2d(128, 128, kernel_size=3, stride=2, padding=1, bias=True),]
+        model2+=[nn.ReLU(True),]
+        model2+=[norm_layer(128),]
+        model3=[nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1, bias=True),]
+        model3+=[nn.ReLU(True),]
+        model3+=[nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1, bias=True),]
+        model3+=[nn.ReLU(True),]
+        model3+=[nn.Conv2d(256, 256, kernel_size=3, stride=2, padding=1, bias=True),]
+        model3+=[nn.ReLU(True),]
+        model3+=[norm_layer(256),]
+        model4=[nn.Conv2d(256, 512, kernel_size=3, stride=1, padding=1, bias=True),]
+        model4+=[nn.ReLU(True),]
+        model4+=[nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=1, bias=True),]
+        model4+=[nn.ReLU(True),]
+        model4+=[nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=1, bias=True),]
+        model4+=[nn.ReLU(True),]
+        model4+=[norm_layer(512),]
+        model5=[nn.Conv2d(512, 512, kernel_size=3, dilation=2, stride=1, padding=2, bias=True),]
+        model5+=[nn.ReLU(True),]
+        model5+=[nn.Conv2d(512, 512, kernel_size=3, dilation=2, stride=1, padding=2, bias=True),]
+        model5+=[nn.ReLU(True),]
+        model5+=[nn.Conv2d(512, 512, kernel_size=3, dilation=2, stride=1, padding=2, bias=True),]
+        model5+=[nn.ReLU(True),]
+        model5+=[norm_layer(512),]
+        model6=[nn.Conv2d(512, 512, kernel_size=3, dilation=2, stride=1, padding=2, bias=True),]
+        model6+=[nn.ReLU(True),]
+        model6+=[nn.Conv2d(512, 512, kernel_size=3, dilation=2, stride=1, padding=2, bias=True),]
+        model6+=[nn.ReLU(True),]
+        model6+=[nn.Conv2d(512, 512, kernel_size=3, dilation=2, stride=1, padding=2, bias=True),]
+        model6+=[nn.ReLU(True),]
+        model6+=[norm_layer(512),]
+        model7=[nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=1, bias=True),]
+        model7+=[nn.ReLU(True),]
+        model7+=[nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=1, bias=True),]
+        model7+=[nn.ReLU(True),]
+        model7+=[nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=1, bias=True),]
+        model7+=[nn.ReLU(True),]
+        model7+=[norm_layer(512),]
+        model8=[nn.ConvTranspose2d(512, 256, kernel_size=4, stride=2, padding=1, bias=True),]
+        model8+=[nn.ReLU(True),]
+        model8+=[nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1, bias=True),]
+        model8+=[nn.ReLU(True),]
+        model8+=[nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1, bias=True),]
+        model8+=[nn.ReLU(True),]
+        model8+=[nn.Conv2d(256, 313, kernel_size=1, stride=1, padding=0, bias=True),]
+        self.model1 = nn.Sequential(*model1)
+        self.model2 = nn.Sequential(*model2)
+        self.model3 = nn.Sequential(*model3)
+        self.model4 = nn.Sequential(*model4)
+        self.model5 = nn.Sequential(*model5)
+        self.model6 = nn.Sequential(*model6)
+        self.model7 = nn.Sequential(*model7)
+from ultralytics import YOLO
+from schemas import DetectedItem, BoundingBox
+from nutrition_db import (
+    estimate_calories,
+    get_nutrition_for_label,
+    estimate_macros,
+    estimate_micros,
+    simple_advice,
+)
+from typing import List, Dict, Optional
+from PIL import Image
+import os
+# Path to the YOLO weights (set via env or default path)
+YOLO_WEIGHTS = os.environ.get('YOLO_WEIGHTS', './runs/detect/train2/best.pt')
+# lazy-loaded model reference
+_model = None
+def load_model():
+    """
+    Lazily load the ultralytics YOLO model.
+    """
+    global _model
+    if _model is None:
+        # If the file doesn't exist, the YOLO constructor will still accept model names like 'yolov8n.pt'
+        _model = YOLO(YOLO_WEIGHTS)
+    return _model
+def run_inference(
+    image_path: str,
+    condition: Optional[str] = None,
+    serve_mults: Optional[Dict[str, float]] = None
+) -> Dict:
+    """
+    Run YOLO inference on an image, estimate calories/macros/micros, return structured results.
+    """
+    model = load_model()
+    results = model.predict(source=image_path, conf=0.25)
+    # Get image dimensions
+    img = Image.open(image_path)
+    img_size = {'width': img.width, 'height': img.height}
+    detections: List[Dict] = []
+    total_calories = 0.0
+    total_protein = 0.0
+    total_carbs = 0.0
+    total_fat = 0.0
+    total_sugar = 0.0
+    total_fiber = 0.0
+    total_sodium = 0.0
+    for result in results:
+        boxes = result.boxes
+        for box in boxes:
+            cls_id = int(box.cls[0])
+            conf = float(box.conf[0])
+            x1, y1, x2, y2 = box.xyxy[0].tolist()
+            # Get label name
+            label = model.names[cls_id]
+            # Build bbox dict
+            bbox_dict = {
+                'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2,
+                'confidence': conf
+            }
+            # Nutrition base
+            nutrition = get_nutrition_for_label(label)
+            sm = serve_mults.get(label) if serve_mults else None
+            # Estimates
+            estimated_cal = estimate_calories(label, bbox_dict, img_size, sm)
+            macros = estimate_macros(label, bbox_dict, img_size, sm)
+            micros = estimate_micros(label, bbox_dict, img_size, sm)
+            advice = simple_advice(label, condition)
