@@ -1,4 +1,5 @@
 import { prefersStill, onWidthResize, rng } from "/intros/shared/common.js";
+import { playSwarmRebuild } from "./intros/swarm-rebuild.js";
 
 const FONT_PX = 12;
 const CELL_W = 7.2;
@@ -54,7 +55,6 @@ const TYPE_FOCUS_MS = 1400;
 const POINTER_LOCK_MS = 2500;
 const DIVE = { count: 6000, phone: 3000, buckets: 10, ms: 1700 };
 const VIEW = { cols: 112, top: 0.12, min: 18, ramp: 2 };
-const BOOT = { command: "nvim ~/Projects", blinks: 3, reveal: 700 };
 const EDIT = { scrolloff: 3, wipe: [4, 12] };
 const VISITOR_IDLE_MS = 5000;
 const OBJECT_DWELL = 900;
@@ -111,6 +111,7 @@ const paneStatus = document.querySelector(".pane-status");
 const paneCmd = document.querySelector(".pane-cmd");
 const glass = document.querySelector(".kb-glass");
 const brandLink = document.querySelector(".brand");
+const replaySwarm = document.querySelector(".swarm-replay");
 const switchNav = document.querySelector(".switch");
 const noteLine = document.querySelector(".note");
 const sourcesNav = document.querySelector(".sources");
@@ -133,7 +134,7 @@ let message = null;
 let block = null;
 let blockFrame = 0;
 const director = { token: 0, timer: 0, hush: false };
-const boot = { active: false, token: 0 };
+let rebuilding = false;
 let eyeRestUntil = 0;
 let object = null;
 let objectTimer = 0;
@@ -361,7 +362,6 @@ function renderPane(pane, from = 0) {
       flux.cells.delete(r * cols + c);
       fades.delete(r * cols + c);
     }
-    if (r > wall.revealed) continue;
     const { text: line, num, kinds, alpha, tint } = rowOf(pane, r);
     const label = num === null ? "" : String(num).padStart(GUTTER - 1, " ");
     [...label].forEach((ch, k) => ch !== " " && set(r, pane.c0 + k, ch, 0.26, visit.tints.text));
@@ -400,11 +400,10 @@ function placeStatus() {
   const pane = wall.panes[0];
   const c0 = wall.span[0];
   const c1 = pane && pane.sep >= 0 ? pane.sep : wall.span[1];
-  const on = wall.revealed === Infinity;
   [[statusLine, 1], [cmdLine, 2]].forEach(([node, k]) => {
     if (!node) return;
     Object.assign(node.style, { left: `${cellX(c0)}px`, top: `${(wall.band[1] + k) * CELL_H}px`, width: `${cellX(c1) - cellX(c0)}px` });
-    node.classList.toggle("is-on", on);
+    node.classList.add("is-on");
   });
   const t = ghost.terminal;
   const inner = Boolean(t?.nvim) && pane?.sep >= 0;
@@ -549,7 +548,7 @@ function showCursor() {
   const pane = wall.panes[0];
   const r = screenRow(editor.row);
   const c = pane.codeC0 + editor.col;
-  const ok = r >= wall.band[0] && r <= wall.band[1] && c < pane.codeC1 && !boot.active && !leaving && !visitorSession && !picker && !inObject(c, r);
+  const ok = r >= wall.band[0] && r <= wall.band[1] && c < pane.codeC1 && !rebuilding && !leaving && !visitorSession && !picker && !inObject(c, r);
   const caret = ghostCaret();
   caret.block = editor.mode !== "INSERT";
   if (ok) placeCaret(caret, r, c, true);
@@ -633,52 +632,37 @@ async function normalKeys(keys, alive) {
   return true;
 }
 
-async function bootView() {
-  const token = ++boot.token;
-  const alive = () => token === boot.token && Boolean(wall);
-  if (prefersStill() || !wall?.panes.length) {
-    finishBoot();
-    return;
-  }
-  boot.active = true;
-  wall.revealed = -1;
-  const pane = wall.panes[0];
-  pane.scroll.value = pane.scroll.target = -wall.band[0];
-  renderPane(pane);
-  const row = wall.band[0];
-  const col = writePrompt(row, pane.c0 + 1, "~");
-  repaint(0, 0, wall.cols - 1, wall.rows - 1);
-  placeStatus();
-  const caret = makeCaret();
-  caret.block = true;
-  const typed = (await blinkAt(caret, row, col, BOOT.blinks, alive)) && (await typeInto(caret, row, col, [...BOOT.command], { alpha: 0.92, glow: true, alive, typos: 0 })) && (await blinkAt(caret, row, col + BOOT.command.length, 1, alive));
-  dropCaret(caret);
-  if (!typed || !alive()) return;
-  pressKey("Enter");
-  await sleep(220);
+function rebuildIntro() {
+  if (!wall || rebuilding || leaving) return;
+  replaySwarm.hidden = true;
+  const [left, right] = wall.span;
   const [top, bottom] = wall.band;
-  for (let r = top; r <= bottom; r++) {
-    if (!alive()) return;
-    wall.revealed = r;
-    renderPane(pane);
-    repaint(pane.c0, top, pane.c0 + pane.width - 1, r);
-    await sleep(BOOT.reveal / (bottom - top + 1));
-  }
-  if (alive()) finishBoot();
-}
-
-function finishBoot() {
-  boot.token++;
-  boot.active = false;
-  if (wall) {
-    wall.revealed = Infinity;
-    for (const pane of wall.panes) renderPane(pane);
-    repaint(0, 0, wall.cols - 1, wall.rows - 1);
-    placeStatus();
-    homeCursor();
-    refreshHover();
-  }
-  scheduleCycle(between(...CYCLE.first));
+  const stripHeight = (bottom - top + 3) * CELL_H / 3;
+  const bounds = wallCanvas.getBoundingClientRect();
+  const strip = (index) => new DOMRect(
+    bounds.left + cellX(left), bounds.top + top * CELL_H + index * stripHeight,
+    cellX(right) - cellX(left), stripHeight + 1,
+  );
+  const { kinds } = visit.theme;
+  rebuilding = true;
+  playSwarmRebuild({
+    stage: wallCanvas.parentElement,
+    surface: wallCanvas,
+    colors: [kinds.string, kinds.type, kinds.keyword],
+    tracks: [
+      [brandLink, strip(0), noteLine],
+      [document.querySelector(".intro-projects"), strip(1), themeKey],
+      [switchNav, strip(2), enterLink],
+    ],
+    instruction: "Hold the wall or Space to gather",
+    onFinish() {
+      rebuilding = false;
+      replaySwarm.hidden = new URLSearchParams(location.search).has("still");
+      homeCursor();
+      refreshHover();
+      scheduleCycle(between(...CYCLE.first));
+    },
+  });
 }
 
 function renderWall() {
@@ -728,14 +712,9 @@ function renderWall() {
     noteLine.style.visibility = noteEnd + 2 > enterStart ? "hidden" : "";
   }
   const size = cols * rows;
-  if (boot.active) {
-    boot.token++;
-    boot.active = false;
-    scheduleCycle(between(...CYCLE.first));
-  }
   visit.pristine = wrapRows(visit.logical, span[1] - 1 - span[0] - GUTTER);
   resetBuffer();
-  wall = { context, cols, rows, span, fade: new Array(rows).fill(0), band: [0, rows - 1], revealed: Infinity, chars: new Array(size).fill(" "), alphas: new Array(size).fill(KIND_ALPHA.ident), tints: new Array(size).fill(visit.tints.text), blocked: zones(), width, height, panes: [], noteRoom };
+  wall = { context, cols, rows, span, fade: new Array(rows).fill(0), band: [0, rows - 1], chars: new Array(size).fill(" "), alphas: new Array(size).fill(KIND_ALPHA.ident), tints: new Array(size).fill(visit.tints.text), blocked: zones(), width, height, panes: [], noteRoom };
   flux.cells.clear();
   flux.dirty.clear();
   fades.clear();
@@ -1558,7 +1537,7 @@ function stopCycle() {
 
 function calmNow() {
   const now = performance.now();
-  return Boolean(wall) && !leaving && !document.hidden && !prefersStill() && !drag && !picker && !visitorSession && now - lastScrollAt > 1500 && now - lastVisitorKeyAt > 4000;
+  return Boolean(wall) && !rebuilding && !leaving && !document.hidden && !prefersStill() && !drag && !picker && !visitorSession && now - lastScrollAt > 1500 && now - lastVisitorKeyAt > 4000;
 }
 
 function until(test, alive, limit) {
@@ -2342,12 +2321,12 @@ function finishClose(now) {
 }
 
 function canOpen(now) {
-  return Boolean(wall) && !tile && !block && !object && !drag && !picker && !leaving && !boot.active && !director.hush && !(message && !message.done) && now > eyeRestUntil && now - lastScrollAt > 1200;
+  return Boolean(wall) && !tile && !block && !object && !drag && !picker && !leaving && !rebuilding && !director.hush && !(message && !message.done) && now > eyeRestUntil && now - lastScrollAt > 1200;
 }
 
 function watch(r, c) {
   const now = performance.now();
-  if (tile || leaving || !wall || boot.active || document.hidden || block || drag || visitorSession || now - lastScrollAt < 1200) return;
+  if (tile || leaving || !wall || rebuilding || document.hidden || block || drag || visitorSession || now - lastScrollAt < 1200) return;
   const y = (r + 0.5) * CELL_H;
   if (open(now, chooseTile([cellX(c), y]))) tile.watch = true;
 }
@@ -3736,7 +3715,7 @@ function lineAt(x, y) {
   const c = Math.floor(x / CELL_W);
   const r = Math.floor(y / CELL_H);
   if (r < 0 || r >= wall.rows || c < 0 || c >= wall.cols) return null;
-  if (wall.fade[r] < 0.35 || r > wall.revealed) return null;
+  if (wall.fade[r] < 0.35) return null;
   if (wall.blocked.some((z) => x >= z.x0 && x < z.x1 && y >= z.y0 && y < z.y1)) return null;
   if (inObject(c, r) || inTerminal(c, r) || inPicker(c, r)) return null;
   const pane = paneAt(c);
@@ -3843,6 +3822,7 @@ function tap(x, y) {
 }
 
 window.addEventListener("pointermove", (event) => {
+  if (rebuilding) return;
   const now = performance.now();
   const isTouch = event.pointerType === "touch" || event.pointerType === "pen";
   lastPointerType = event.pointerType;
@@ -3867,6 +3847,7 @@ window.addEventListener("pointermove", (event) => {
 });
 
 window.addEventListener("pointerdown", (event) => {
+  if (rebuilding) return;
   lastPointerType = event.pointerType;
   if (event.pointerType !== "touch" && event.pointerType !== "pen") return;
   const now = performance.now();
@@ -3905,7 +3886,7 @@ window.addEventListener("pointercancel", (event) => {
 });
 
 wallCanvas.addEventListener("click", (event) => {
-  if (lastPointerType !== "mouse" || event.button !== 0 || leaving || !wall) return;
+  if (lastPointerType !== "mouse" || event.button !== 0 || rebuilding || leaving || !wall) return;
   if (picker) {
     pickerClick(event.clientX, event.clientY);
     return;
@@ -3919,7 +3900,6 @@ window.addEventListener(
   "wheel",
   (event) => {
     if (!wall || leaving || event.ctrlKey || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-    if (boot.active) finishBoot();
     if (picker) {
       event.preventDefault();
       return;
@@ -4099,6 +4079,17 @@ async function leave(href) {
   window.location.href = href;
 }
 
+replaySwarm.addEventListener("click", () => {
+  if (rebuilding || leaving) return;
+  closePicker(true);
+  endVisitor(false);
+  abortGhost();
+  abortBlock();
+  endObject();
+  closeNow();
+  rebuildIntro();
+});
+
 themeKey?.addEventListener("click", (event) => {
   event.preventDefault();
   if (picker) closePicker(true);
@@ -4113,7 +4104,6 @@ enterLink?.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (event.defaultPrevented) return;
-  if (boot.active && event.key !== "Enter") finishBoot();
   const active = document.activeElement;
   const free = !active || active === document.body || active === document.documentElement;
   if (picker && free) {
@@ -4235,7 +4225,7 @@ useTheme(visit.theme);
 text = visit.files.flatMap((file) => file.lines.map((line) => line.trim())).filter(Boolean).join(" ");
 ({ codeText, codeKinds } = codeSource(visit.files));
 renderWall();
-bootView();
+if (!leaving) rebuildIntro();
 markSeen();
 navigator.keyboard
   ?.getLayoutMap?.()

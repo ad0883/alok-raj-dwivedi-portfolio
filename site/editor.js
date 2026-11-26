@@ -1,3 +1,4 @@
+import { playSwarmRebuild } from "../intros/swarm-rebuild.js";
 import { createArchive } from "./archive.js";
 import { createWatch } from "./watch.js";
 import { createBar } from "./bar.js";
@@ -860,6 +861,7 @@ try {
 } catch {}
 applyTheme(saved && palettes.has(saved) ? saved : DEFAULT_THEME);
 
+const showEntrance = !location.hash;
 const initialEntry = entries.find((entry) => entry.id === decodeURIComponent(location.hash.slice(1))) || entries[0];
 const initialItem = entries.find((entry) => entry.id === initialEntry.parent) || initialEntry;
 wheel = createWheel(wheelHost, {
@@ -902,3 +904,30 @@ if (!openEntry) {
   const { item } = wheel.current();
   open(item.entry);
 }
+
+const replaySwarm = $(".swarm-replay");
+const stage = $(".stage");
+const still = new URLSearchParams(location.search).has("still");
+function rebuildEditor() {
+  replaySwarm.hidden = true;
+  const { kinds } = palettes.get(key(currentTheme));
+  const sections = narrow.matches ? tabline : wheelHost;
+  playSwarmRebuild({
+    stage,
+    surface: stage,
+    colors: [kinds.string, kinds.type, kinds.keyword],
+    tracks: [
+      [$(".brand"), sections.getBoundingClientRect(), barHost.getBoundingClientRect()],
+      [winbar, buffer.getBoundingClientRect()],
+      [$(".switch"), $(".desk").getBoundingClientRect()],
+    ],
+    interactive: "a, button, .wheel, .frame, .rack, input, select, textarea",
+    instruction: "Hold the editor or Space to gather",
+    onFinish() {
+      replaySwarm.hidden = still;
+    },
+  });
+}
+replaySwarm.addEventListener("click", rebuildEditor);
+if (showEntrance) rebuildEditor();
+else replaySwarm.hidden = still;

@@ -1,0 +1,53 @@
+.swarm-rebuild {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.swarm-controls,
+.swarm-replay {
+  position: absolute;
+  z-index: 9;
+  right: max(16px, calc((100% - 806px) / 2));
+  bottom: max(64px, 8%);
+}
+
+.swarm-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 8px;
+  background: var(--bg);
+  color: var(--chrome);
+  font: 400 11px/1.4 "Plex Mono", monospace;
+  pointer-events: none;
+}
+
+.swarm-skip,
+.swarm-replay {
+  pointer-events: auto;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--dim);
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 12px "Plex Mono", monospace;
+  cursor: pointer;
+}
+
+.swarm-replay:hover,
+.swarm-skip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.is-leaving .swarm-replay {
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swarm-replay { display: none; }
+}

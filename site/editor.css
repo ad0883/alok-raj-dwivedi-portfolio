@@ -1968,3 +1968,31 @@ h2.reader-heading {
     transition: none;
   }
 }
+
+/* Keep the editor's animated keyboard beneath the swarm during the rebuild. */
+.swarm-rebuild { z-index: 40; }
+.swarm-controls { z-index: 41; }
+
+.switch .swarm-replay {
+  position: static;
+  min-height: 26px;
+  margin: -6px 16px -7px 0;
+  padding: 0;
+  border: 0;
+  color: var(--chrome);
+}
+
+.stage.is-rebuilding .buffer {
+  touch-action: pinch-zoom;
+  user-select: none;
+}
+
+@media (max-width: 360px) {
+  .switch .swarm-replay {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    margin: 0;
+    white-space: nowrap;
+  }
+}
