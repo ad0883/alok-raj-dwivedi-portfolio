@@ -339,10 +339,39 @@ function calendarBlock() {
   return { cmd: `node calendar.mjs ${snapshot.contributions.from.slice(0, 4)}`, calendar: { days, months: months && months.from === snapshot.contributions.from && months.to === snapshot.contributions.to ? months.months : [], done: `// done · ${new Set(days.map((day) => day.date.slice(0, 7))).size} months · ${fmt(snapshot.contributions.total)} contributions` } };
 }
 
+function createAboutPortrait() {
+  const portrait = make("div", "about-portrait");
+  const crop = make("span", "about-portrait-crop");
+  const image = make("img", "about-portrait-image");
+  image.src = "/assets/aarav-portrait-small.webp";
+  image.srcset = "/assets/aarav-portrait-small.webp 680w, /assets/aarav-portrait.webp 1254w";
+  image.sizes = "(max-width: 700px) 174px, 224px";
+  image.width = 1254;
+  image.height = 1254;
+  image.alt = "Alok Dwivedi wearing glasses and a black collared shirt.";
+  const readout = make("div", "about-portrait-console");
+  const command = make("div", "about-portrait-command");
+  const marker = make("span", "about-portrait-marker", "›");
+  const code = make("code", "about-portrait-code", "Image.open(path)");
+  const result = make("span", "about-portrait-result", "WebP · RGBA");
+  readout.setAttribute("aria-hidden", "true");
+  command.append(marker, code);
+  readout.append(command, result);
+  crop.append(image);
+  portrait.append(crop, readout);
+  image.decode().then(() => {
+    portrait.classList.add("is-ready");
+  }).catch(() => {
+    readout.hidden = true;
+  });
+  return portrait;
+}
+
 function aboutSpec() {
   return {
     cwd: "~",
     branch: null,
+    portrait: createAboutPortrait(),
     hero: (host) =>
       createBlueprint(host, {
         points: snapshot.contributions.total,
@@ -355,6 +384,8 @@ function aboutSpec() {
       heading("About me"),
       ...about.bio.map((line) => paragraph(line)),
       ...(about.links.length ? [paragraph(...about.links.flatMap((link, k) => [...(k ? [" · "] : []), [link.name, "", link.url]]))] : []),
+    ],
+    details: [
       ...(projectEntries.length ? [heading("My projects", "h3"), ...projectEntries.map((entry) => paragraph([entry.label, "", `#${entry.id}`]))] : []),
     ],
     blocks: [
@@ -893,7 +924,7 @@ if (moreAt >= 0)
   triptych(childrenOf("more").map((entry) => entry.data.images[0]?.file).filter(Boolean))
     .then((src) => wheel.setSrc(moreAt, src))
     .catch(() => {});
-if (!reduced.matches) await typeCmd(":e ~/Projects", 18);
+if (!showEntrance && !reduced.matches) await typeCmd(":e ~/Projects", 18);
 wheelHost.classList.add("is-in");
 wheel.form();
 booted = true;
@@ -911,16 +942,33 @@ const still = new URLSearchParams(location.search).has("still");
 function rebuildEditor() {
   replaySwarm.hidden = true;
   const { kinds } = palettes.get(key(currentTheme));
-  const sections = narrow.matches ? tabline : wheelHost;
+  // Treat a terminal line as one piece of copy, but give each contact or
+  // project link its own cursor when a line is made up of links.
+  function bufferParts() {
+    const parts = [];
+    for (const line of buffer.querySelectorAll(".tx")) {
+      if (line.querySelector("a") && [...line.childNodes].every(node =>
+        node.nodeName === "A" || (node.nodeType === Node.TEXT_NODE && /^[ ·]*$/.test(node.textContent))
+      )) parts.push(...line.children);
+      else parts.push(line);
+    }
+    parts.push(...buffer.querySelectorAll(
+      ".about-portrait, .frame, .t-name, .t-count, .t-help, .shot-description, .t-dot, .wave canvas, .arc-card, .arc-mon, .t-cal, .t-live"
+    ));
+    return parts;
+  }
   playSwarmRebuild({
     stage,
     surface: stage,
     colors: [kinds.string, kinds.type, kinds.keyword],
-    tracks: [
-      [$(".brand"), sections.getBoundingClientRect(), barHost.getBoundingClientRect()],
-      [winbar, buffer.getBoundingClientRect()],
-      [$(".switch"), $(".desk").getBoundingClientRect()],
+    groups: [
+      stage.querySelectorAll(".brand > *, .switch a, .tabline > *"),
+      stage.querySelectorAll(".wheel-ink, .wheel-item, .wheel-mark, .wheel-hint"),
+      [winbar, ...bufferParts()],
+      barHost.querySelectorAll(".bar-title, .cmd, .hunt, .keys, .label, .value, canvas, .den"),
+      watch.swarmParts(),
     ],
+    liveParts: { root: buffer, collect: bufferParts },
     interactive: "a, button, .wheel, .frame, .rack, input, select, textarea",
     instruction: "Hold the editor or Space to gather",
     onFinish() {

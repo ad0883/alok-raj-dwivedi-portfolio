@@ -1,145 +1,3 @@
-body {
-  --bg: #050505;
-  --ink: #ebe6db;
-  --dim: #6d6b66;
-  --chrome: #a9a49a;
-  --cell-w: 7.2px;
-  --cell-h: 13px;
-}
-
-.wall {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  touch-action: pinch-zoom;
-}
-
-.tile {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: none;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.machine {
-  position: absolute;
-  z-index: 2;
-  display: none;
-  pointer-events: none;
-}
-
-.status {
-  position: absolute;
-  z-index: 3;
-  display: flex;
-  margin: 0;
-  background: var(--line, var(--bg));
-  color: var(--chrome);
-  font: 400 12px/13px "Plex Mono", ui-monospace, monospace;
-  letter-spacing: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 320ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.status.is-on {
-  opacity: 1;
-}
-
-.status .mode {
-  padding: 0 var(--cell-w);
-  background: var(--accent, var(--ink));
-  color: var(--bg);
-}
-
-.status .path {
-  flex: 1;
-  min-width: 0;
-  padding: 0 var(--cell-w);
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.status .pos {
-  padding: 0 var(--cell-w);
-}
-
-.status.is-insert .mode {
-  background: var(--insert, var(--accent, var(--ink)));
-}
-
-.cmdline {
-  position: absolute;
-  z-index: 3;
-  display: flex;
-  height: var(--cell-h);
-  margin: 0;
-  color: var(--ink);
-  font: 400 12px/13px "Plex Mono", ui-monospace, monospace;
-  letter-spacing: 0;
-  white-space: pre;
-  overflow: hidden;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 320ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.cmdline.is-on {
-  opacity: 1;
-}
-
-.cmdline .cmd {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-}
-
-.cmdline.is-typing .cmd::after {
-  content: "";
-  display: inline-block;
-  width: var(--cell-w);
-  height: var(--cell-h);
-  vertical-align: top;
-  background: var(--accent, var(--ink));
-}
-
-.cmdline .showcmd {
-  flex: none;
-  width: calc(11 * var(--cell-w));
-  color: var(--chrome);
-}
-
-.glass {
-  position: absolute;
-  z-index: 2;
-  display: none;
-  pointer-events: none;
-  background: color-mix(in srgb, var(--bg) 35%, transparent);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-}
-
-.kb-glass {
-  --feather: 14px;
-  opacity: 0;
-  transition: opacity 320ms cubic-bezier(0.23, 1, 0.32, 1);
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--feather), #000 calc(100% - var(--feather)), transparent), linear-gradient(to bottom, transparent, #000 var(--feather), #000 calc(100% - var(--feather)), transparent);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, transparent, #000 var(--feather), #000 calc(100% - var(--feather)), transparent), linear-gradient(to bottom, transparent, #000 var(--feather), #000 calc(100% - var(--feather)), transparent);
-  mask-composite: intersect;
-}
-
-.kb-glass.is-on {
-  opacity: 1;
-}
-
 .frame-top {
   top: 0;
   left: 0;
@@ -213,29 +71,6 @@ body {
   filter: brightness(1.18);
 }
 
-.intro-projects {
-  position: absolute;
-  z-index: 6;
-  top: calc(5 * var(--cell-h));
-  left: var(--project-inset, 5vw);
-  right: var(--project-inset, 5vw);
-  width: fit-content;
-  max-width: calc(100% - 2 * var(--project-inset, 5vw));
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 1.75ch;
-  background: var(--bg);
-  color: var(--ink);
-  font: 400 12px/1.6 "Plex Mono", ui-monospace, monospace;
-}
-
-.intro-projects a {
-  padding-block: 3px;
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 0.25em;
-}
-
 .theme-key {
   position: absolute;
   z-index: 6;
@@ -255,46 +90,6 @@ body {
 
 .theme-key:hover {
   color: var(--ink);
-}
-
-.command-glyph {
-  position: relative;
-  display: inline-block;
-  width: 14px;
-  height: 10px;
-  flex: none;
-  color: var(--accent, var(--ink));
-}
-
-.command-glyph::before {
-  position: absolute;
-  top: 1px;
-  left: 1px;
-  width: 5px;
-  height: 5px;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  content: "";
-  transform: rotate(-45deg);
-}
-
-.command-glyph::after {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 6px;
-  height: 2px;
-  background: currentColor;
-  content: "";
-}
-
-.theme-key .command-glyph {
-  margin-top: -1px;
-}
-
-.theme-key:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 4px;
 }
 
 .enter:focus-visible {
@@ -326,7 +121,6 @@ body {
 
 .is-leaving .brand,
 .is-leaving .switch,
-.is-leaving .intro-projects,
 .is-leaving .note,
 .is-leaving .enter,
 .is-leaving .theme-key,
@@ -344,5 +138,45 @@ body {
   .switch {
     top: calc(5 * var(--cell-h));
     right: 8px;
+  }
+}
+
+.switch.is-solo { gap: 20px; }
+
+.explore-prompt {
+  position: absolute;
+  z-index: 6;
+  bottom: clamp(76px, 12svh, 120px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 16px;
+  border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
+  background: var(--bg);
+  color: var(--ink);
+  font: 12px/1.4 "Plex Mono", monospace;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.explore-prompt kbd {
+  padding: 2px 5px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  color: var(--ink);
+  font: inherit;
+}
+
+.explore-prompt:hover { border-color: var(--ink); }
+.is-leaving .explore-prompt { opacity: 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.swarm-boot, .is-leaving) .classic-stage:not(.is-rebuilding) .explore-prompt {
+    animation: explore-pulse 1.35s ease-in-out 3;
+  }
+}
+
+@keyframes explore-pulse {
+  50% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent, var(--ink)) 48%, transparent);
   }
 }

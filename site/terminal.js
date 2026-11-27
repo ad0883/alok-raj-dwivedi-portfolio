@@ -633,7 +633,14 @@ export function createTerminal(buffer, options) {
       hero = null;
       viewer = spec.shots?.length ? buildViewer(spec.shots) : null;
       buffer.replaceChildren();
-      for (const out of spec.head || []) buffer.append(row(out.segments, out.className, out.tag));
+      const head = (spec.head || []).map((out) => row(out.segments, out.className, out.tag));
+      if (spec.portrait) {
+        const profile = make("header", "about-profile");
+        const copy = make("div");
+        copy.append(...head);
+        profile.append(copy, spec.portrait);
+        buffer.append(profile);
+      } else buffer.append(...head);
       if (viewer) {
         buffer.append(viewer.figure);
         showShot(0);

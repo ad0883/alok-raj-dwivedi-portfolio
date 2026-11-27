@@ -33,7 +33,6 @@ const KIND_TINT = { keyword: "keyword", string: "string", number: "number", func
 const KEYWORDS = new Set("import property readonly required default signal alias var let const function return if else for while do switch case break continue new delete typeof instanceof in of true false null undefined this root parent id on async await class extends static local then elseif end nil and or not repeat until struct enum typedef sizeof unsigned signed int long short char float double void bool static_assert goto extern inline export interface type def module require include extend self super yield try catch finally throw throws raise rescue ensure unless begin public private protected internal override virtual abstract namespace using fun val package object companion lambda with as from is elif except pass None True False nameof get set".split(" "));
 const COMMENT = { qml: "//", js: "//", c: "//", lua: "--", ruby: "#", shell: "#", python: "#", text: null };
 const MONO = { name: "", accent: "#ebe6db", bg: "#050505", fg: "#ebe6db", kinds: { keyword: "#ebe6db", string: "#ebe6db", number: "#ebe6db", function: "#ebe6db", type: "#ebe6db", comment: "#ebe6db", text: "#ebe6db" } };
-const NOTE_TEXT = "// I build software that learns from images.";
 const touchMode = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 // Bump when face.webm / face.mp4 / face-track.json / wall.json change. These files are fetched by script, and browsers can keep old copies of
 // script-initiated fetches even through a hard refresh; a new ?v= makes the old cache entries unreachable.
@@ -102,18 +101,18 @@ const HAND_LINKS = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 
 const wallCanvas = document.querySelector(".wall");
 const tileCanvas = document.querySelector(".tile");
 const machineCanvas = document.querySelector(".machine");
-const zoneNodes = [".brand", ".switch", ".intro-projects", ".enter", ".note", ".theme-key"].map((selector) => document.querySelector(selector));
+const zoneNodes = [".brand", ".switch", ".enter", ".explore-prompt", ".note", ".theme-key"].map((selector) => document.querySelector(selector));
 const enterLink = document.querySelector(".enter");
+const explorePrompt = document.querySelector(".explore-prompt");
 const themeKey = document.querySelector(".theme-key");
 const statusLine = document.querySelector(".status");
 const cmdLine = document.querySelector(".cmdline");
 const paneStatus = document.querySelector(".pane-status");
 const paneCmd = document.querySelector(".pane-cmd");
 const glass = document.querySelector(".kb-glass");
-const brandLink = document.querySelector(".brand");
 const replaySwarm = document.querySelector(".swarm-replay");
-const switchNav = document.querySelector(".switch");
 const noteLine = document.querySelector(".note");
+const defaultNote = noteLine.textContent;
 const sourcesNav = document.querySelector(".sources");
 const random = rng(Date.now() % 100000);
 
@@ -172,9 +171,10 @@ const fluxAlpha = () => (random() < 0.24 ? 0.95 : 0.45 + random() * 0.3);
 const smooth = (x) => x * x * (3 - 2 * x);
 
 function zones() {
+  const origin = wallCanvas.getBoundingClientRect();
   return zoneNodes.filter((node) => node && node.style.visibility !== "hidden").map((node) => {
     const box = node.getBoundingClientRect();
-    return { x0: box.left - CELL_W, y0: box.top, x1: box.right + CELL_W, y1: box.bottom };
+    return { x0: box.left - origin.left - CELL_W, y0: box.top - origin.top, x1: box.right - origin.left + CELL_W, y1: box.bottom - origin.top };
   });
 }
 
@@ -377,7 +377,7 @@ function renderPane(pane, from = 0) {
 }
 
 function chromeRow() {
-  return Math.floor(Math.min(wall.height, ...[noteLine, enterLink, themeKey].filter(Boolean).map((node) => node.getBoundingClientRect().top)) / CELL_H);
+  return Math.floor((themeKey?.offsetTop ?? wall.height) / CELL_H);
 }
 
 function bandFor(floor) {
@@ -637,22 +637,36 @@ function rebuildIntro() {
   replaySwarm.hidden = true;
   const [left, right] = wall.span;
   const [top, bottom] = wall.band;
-  const stripHeight = (bottom - top + 3) * CELL_H / 3;
   const bounds = wallCanvas.getBoundingClientRect();
-  const strip = (index) => new DOMRect(
-    bounds.left + cellX(left), bounds.top + top * CELL_H + index * stripHeight,
-    cellX(right) - cellX(left), stripHeight + 1,
-  );
+  const lines = [];
+  for (let row = top; row <= bottom; row++) {
+    const offset = row * wall.cols;
+    let first = -1;
+    let last = -1;
+    for (let col = left; col <= right; col++) {
+      if (col === right || hiddenCell(col, row)) {
+        if (first >= 0) lines.push(new DOMRect(
+          bounds.left + cellX(first), bounds.top + row * CELL_H,
+          cellX(last + 1) - cellX(first), CELL_H,
+        ));
+        first = -1;
+      } else if (wall.chars[offset + col] !== " ") {
+        if (first < 0) first = col;
+        last = col;
+      }
+    }
+  }
   const { kinds } = visit.theme;
   rebuilding = true;
   playSwarmRebuild({
     stage: wallCanvas.parentElement,
     surface: wallCanvas,
     colors: [kinds.string, kinds.type, kinds.keyword],
-    tracks: [
-      [brandLink, strip(0), noteLine],
-      [document.querySelector(".intro-projects"), strip(1), themeKey],
-      [switchNav, strip(2), enterLink],
+    groups: [
+      document.querySelectorAll(".brand > *, .switch a"),
+      lines,
+      document.querySelectorAll(".status.is-on > *, .cmdline.is-on > *"),
+      [themeKey, noteLine, enterLink, explorePrompt],
     ],
     instruction: "Hold the wall or Space to gather",
     onFinish() {
@@ -663,6 +677,22 @@ function rebuildIntro() {
       scheduleCycle(between(...CYCLE.first));
     },
   });
+}
+
+function positionChrome(width, rows, [left, right]) {
+  const brand = document.querySelector(".brand");
+  const links = document.querySelector(".switch");
+  const edge = cellX(right - 5);
+  const bottom = (rows - 3) * CELL_H;
+  const enterX = edge - enterLink.offsetWidth;
+  const themeX = enterX - cellX(2) - themeKey.offsetWidth;
+  const noteX = cellX(left + 5);
+  brand.style.left = `${noteX}px`;
+  links.style.right = `${width - edge}px`;
+  Object.assign(enterLink.style, { left: `${enterX}px`, top: `${bottom}px` });
+  Object.assign(themeKey.style, { left: `${themeX}px`, top: `${bottom}px` });
+  Object.assign(noteLine.style, { left: `${noteX}px`, top: `${bottom}px`, bottom: "auto" });
+  noteLine.style.visibility = (defaultNote.length + 2) * CELL_W > themeX - noteX ? "hidden" : "";
 }
 
 function renderWall() {
@@ -687,34 +717,11 @@ function renderWall() {
   const rows = Math.floor(height / CELL_H);
   const [left, right] = columnOf(width);
   const span = [Math.ceil(left / CELL_W), Math.floor(right / CELL_W)];
-  if (brandLink) brandLink.style.left = `${cellX(span[0] + 5)}px`;
-  document.querySelector(".intro-projects").style.setProperty("--project-inset", `${cellX(span[0] + 5)}px`);
-  if (switchNav) switchNav.style.right = `${Math.round(width - cellX(span[1] - 5))}px`;
-  if (enterLink) {
-    const size = Math.round(enterLink.getBoundingClientRect().width / CELL_W);
-    enterLink.style.left = `${(span[1] - 5 - size) * CELL_W}px`;
-    enterLink.style.top = `${(rows - 3) * CELL_H}px`;
-  }
-  let groupStart = enterLink ? span[1] - 5 - Math.round(enterLink.getBoundingClientRect().width / CELL_W) : span[1];
-  if (themeKey) {
-    groupStart -= 2 + Math.round(themeKey.getBoundingClientRect().width / CELL_W);
-    themeKey.style.left = `${Math.round(groupStart * CELL_W)}px`;
-    themeKey.style.top = `${(rows - 3) * CELL_H}px`;
-  }
-  let noteRoom = span[1] - span[0] - 10;
-  if (noteLine) {
-    const noteEnd = span[0] + 5 + NOTE_TEXT.length + 1;
-    const enterStart = groupStart;
-    noteRoom = enterStart - span[0] - 7;
-    noteLine.style.left = `${cellX(span[0] + 5)}px`;
-    noteLine.style.top = `${(rows - 3) * CELL_H}px`;
-    noteLine.style.bottom = "auto";
-    noteLine.style.visibility = noteEnd + 2 > enterStart ? "hidden" : "";
-  }
+  positionChrome(width, rows, span);
   const size = cols * rows;
   visit.pristine = wrapRows(visit.logical, span[1] - 1 - span[0] - GUTTER);
   resetBuffer();
-  wall = { context, cols, rows, span, fade: new Array(rows).fill(0), band: [0, rows - 1], chars: new Array(size).fill(" "), alphas: new Array(size).fill(KIND_ALPHA.ident), tints: new Array(size).fill(visit.tints.text), blocked: zones(), width, height, panes: [], noteRoom };
+  wall = { context, cols, rows, span, fade: new Array(rows).fill(0), band: [0, rows - 1], chars: new Array(size).fill(" "), alphas: new Array(size).fill(KIND_ALPHA.ident), tints: new Array(size).fill(visit.tints.text), blocked: zones(), width, height, panes: [] };
   flux.cells.clear();
   flux.dirty.clear();
   fades.clear();
@@ -3757,7 +3764,7 @@ function refreshHover() {
 }
 
 function fitNote(textValue) {
-  const room = clamp(wall?.noteRoom || 40, 12, 64);
+  const room = clamp(Math.floor((noteLine?.clientWidth || 280) / CELL_W), 12, 64);
   if (textValue.length <= room) return textValue;
   const keep = room - 1;
   return `${textValue.slice(0, Math.ceil(keep * 0.35))}…${textValue.slice(textValue.length - Math.floor(keep * 0.65))}`;
@@ -3765,7 +3772,7 @@ function fitNote(textValue) {
 
 function setNote(line) {
   if (!noteLine) return;
-  noteLine.textContent = line ? fitNote(`${line.file.repo}/${line.file.path}:${line.n}`) : NOTE_TEXT;
+  noteLine.textContent = line ? fitNote(`${line.file.repo}/${line.file.path}:${line.n}`) : defaultNote;
 }
 
 function dragTo(event, now) {
@@ -3899,7 +3906,7 @@ wallCanvas.addEventListener("click", (event) => {
 window.addEventListener(
   "wheel",
   (event) => {
-    if (!wall || leaving || event.ctrlKey || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    if (!wall || leaving || document.documentElement.scrollHeight > innerHeight || event.ctrlKey || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
     if (picker) {
       event.preventDefault();
       return;
@@ -4096,11 +4103,13 @@ themeKey?.addEventListener("click", (event) => {
   else openPicker();
 });
 
-enterLink?.addEventListener("click", (event) => {
-  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-  event.preventDefault();
-  leave(enterLink.href);
-});
+for (const link of [enterLink, explorePrompt].filter(Boolean)) {
+  link.addEventListener("click", (event) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    leave(link.href);
+  });
+}
 
 document.addEventListener("keydown", (event) => {
   if (event.defaultPrevented) return;
@@ -4198,7 +4207,7 @@ function loadFace() {
     video.loop = true;
     video.playsInline = true;
     video.preload = "auto";
-    const track = fetch(`face-track.json?v=${ASSET_V}`)
+    const track = fetch(`/face-track.json?v=${ASSET_V}`)
       .then((response) => (response.ok ? response.json() : null))
       .catch(() => null);
     video.addEventListener("loadedmetadata", async () => {
@@ -4206,7 +4215,7 @@ function loadFace() {
       resolve(data ? { video, track: data } : null);
     }, { once: true });
     video.addEventListener("error", () => resolve(null), { once: true });
-    fetch(video.canPlayType('video/webm; codecs="vp9"') ? `face.webm?v=${ASSET_V}` : `face.mp4?v=${ASSET_V}`)
+    fetch(video.canPlayType('video/webm; codecs="vp9"') ? `/face.webm?v=${ASSET_V}` : `/face.mp4?v=${ASSET_V}`)
       .then((response) => (response.ok ? response.blob() : Promise.reject(new Error(String(response.status)))))
       .then((blob) => {
         video.src = URL.createObjectURL(blob);
@@ -4216,8 +4225,8 @@ function loadFace() {
 }
 
 const [wallData, wallText] = await Promise.all([
-  fetch(`wall.json?v=${ASSET_V}`).then((response) => (response.ok ? response.json() : null)).catch(() => null),
-  fetch(`wall.txt?v=${ASSET_V}`).then((response) => (response.ok ? response.text() : "")).catch(() => ""),
+  fetch(`/wall.json?v=${ASSET_V}`).then((response) => (response.ok ? response.json() : null)).catch(() => null),
+  fetch(`/wall.txt?v=${ASSET_V}`).then((response) => (response.ok ? response.text() : "")).catch(() => ""),
   document.fonts.load(`${FONT_PX}px "Plex Mono"`),
 ]);
 visit = planVisit(wallData, wallText);

@@ -1,3 +1,8 @@
+.swarm-boot .stage,
+.swarm-boot .overlay {
+  opacity: 0;
+}
+
 .swarm-rebuild {
   position: absolute;
   inset: 0;

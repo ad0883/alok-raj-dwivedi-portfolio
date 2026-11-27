@@ -119,6 +119,34 @@ export function createWatch({ layer, deskHost, eyeHost, buffer, status, onState,
   let layoutMap = null;
   let kb = null;
   let hands = [];
+  const swarmOpacity = new Map();
+
+  function swarmParts() {
+    const parts = [];
+    function part(id, rect) {
+      parts.push({ rect, reveal(progress) {
+        if (progress < 1) swarmOpacity.set(id, progress);
+        else swarmOpacity.delete(id);
+        wake();
+      } });
+    }
+    part("eye", eyeHost.getBoundingClientRect());
+    if (kb) {
+      for (const [code, key] of kb.keys) {
+        const w = key.wide || (code === "Escape" ? 22 : 10) * kb.scale;
+        part(code, new DOMRect(key.x - w / 2, key.y - 7, w, 14));
+      }
+      for (const [side, hand] of hands.entries()) {
+        const [x, y, right, bottom] = frameBox(hand.points);
+        part(`hand${side}`, new DOMRect(x, y, right - x, bottom - y));
+      }
+      if (kb.mouse) {
+        const { x, y, w, h } = kb.mouse;
+        part("mouse", new DOMRect(x - w / 2, y - h / 2, w, h));
+      }
+    }
+    return parts;
+  }
   const pointer = { x: -1, y: -1, at: -Infinity, drift: [0, 0], down: 0, button: -1 };
   const focus = { x: 0, y: 0, at: -Infinity };
   const desk = { vis: spring(0, 0.3, 1), mouse: spring(0, 0.28, 1), ox: spring(0, 0.18, 1), oy: spring(0, 0.18, 1), lastAt: -Infinity, mode: "keys" };
@@ -488,7 +516,7 @@ export function createWatch({ layer, deskHost, eyeHost, buffer, status, onState,
     for (const [code, key] of kb.keys) {
       const at = kb.glow.get(code);
       const glow = at === undefined ? 0 : clamp(1 - (now - at) / 260, 0, 1);
-      g.fillStyle = `rgba(${glow > 0 ? colors.accent : colors.ink}, ${((0.2 + 0.75 * glow) * vis).toFixed(3)})`;
+      g.fillStyle = `rgba(${glow > 0 ? colors.accent : colors.ink}, ${((0.2 + 0.75 * glow) * vis * (swarmOpacity.get(code) ?? 1)).toFixed(3)})`;
       if (key.wide) g.fillRect(Math.round(key.x - key.wide / 2), Math.round(key.y) - (glow > 0 ? 1 : 0), Math.round(key.wide), glow > 0 ? 2 : 1);
       else g.fillText(kb.labels.get(code) || "", key.x, key.y + 1 + 12 * kb.scale * (EM_TOP - 0.5));
     }
@@ -579,7 +607,7 @@ export function createWatch({ layer, deskHost, eyeHost, buffer, status, onState,
 
   function drawDesk(now, dt) {
     if (!kb) return false;
-    const active = now - desk.lastAt < DESK_IDLE_MS;
+    const active = swarmOpacity.size > 0 || now - desk.lastAt < DESK_IDLE_MS;
     desk.vis.target = active ? 1 : 0;
     desk.mouse.target = kb.mouse && desk.mode === "mouse" && active ? 1 : 0;
     let moving = !advance(desk.vis, dt);
@@ -593,16 +621,16 @@ export function createWatch({ layer, deskHost, eyeHost, buffer, status, onState,
     if (vis < 0.01) return moving || active;
     drawKeyboard(vis, now);
     let mouseAt = null;
-    if (kb.mouse) mouseAt = drawMouse(vis, now);
+    if (kb.mouse) mouseAt = drawMouse(vis * (swarmOpacity.get("mouse") ?? 1), now);
     const left = hands[0];
-    drawHandShape(left.points, vis, now, left.tips, `['hand0:u'] ${(left.points[0][0] / width).toFixed(7)}`, 0);
+    drawHandShape(left.points, vis * (swarmOpacity.get("hand0") ?? 1), now, left.tips, `['hand0:u'] ${(left.points[0][0] / width).toFixed(7)}`, 0);
     const right = hands[1];
     let points = right.points;
     if (mouseAt && desk.mouse.value > 0.001) {
       const pose = mousePose(mouseAt[0], mouseAt[1]);
       points = points.map((point, k) => lerp(point, pose[k], desk.mouse.value));
     }
-    drawHandShape(points, vis, now, desk.mouse.value > 0.5 ? null : right.tips, `['hand1:u'] ${(points[0][0] / width).toFixed(7)}`, 1);
+    drawHandShape(points, vis * (swarmOpacity.get("hand1") ?? 1), now, desk.mouse.value > 0.5 ? null : right.tips, `['hand1:u'] ${(points[0][0] / width).toFixed(7)}`, 1);
     return moving || active;
   }
 
@@ -826,7 +854,12 @@ export function createWatch({ layer, deskHost, eyeHost, buffer, status, onState,
     const redBusy = stepRed(dt, now) || Boolean(summoned && !summoned.started);
     worm?.drawBody(g, now);
     const repairBusy = drawRepair(now);
-    if (box && eye.openNow > 0.001) drawEye(box, now);
+    if (box && eye.openNow > 0.001) {
+      g.save();
+      g.globalAlpha = swarmOpacity.get("eye") ?? 1;
+      drawEye(box, now);
+      g.restore();
+    }
     worm?.drawRadar(g, now, width);
     const zap = worm?.zap(now);
     if (zap) drawZap(zap);
@@ -918,6 +951,7 @@ export function createWatch({ layer, deskHost, eyeHost, buffer, status, onState,
   const repairCheck = setInterval(repair, REPAIR.every);
 
   return {
+    swarmParts,
     pressKey,
     pressChar,
     focus: setFocus,

@@ -54,16 +54,13 @@ function syncIdentity() {
   write("favicon.svg", fav);
 
   // index.html
-  let idx = read("index.html");
-  idx = idx
-    .replace(/<title>[^<]*<\/title>/, `<title>${domain}</title>`)
-    .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${domain} — a quiet wall of code. ${tagline}">`)
-    .replace(/(<a class="brand"[^>]*>.*?<span>)[^<]*(<\/span><\/a>)/s, `$1${domain}$2`)
-    .replace(/<a href="https:\/\/github\.com\/[^"]*" rel="me">github<\/a>/, `<a href="${ghUrl}" rel="me">github</a>`)
-    .replace(/<h1 class="sr-only">[^<]*<\/h1>/, `<h1 class="sr-only">${domain} — ${tagline}</h1>`)
-    .replace(/(<nav class="intro-projects"[^>]*>)[\s\S]*?(<\/nav>)/, (_, open, close) =>
-      open + CONFIG.projects.map((p) => `\n    <a href="/site/#${slug(p.name)}">${esc(p.shortName || p.name)}</a>`).join("") + "\n  " + close)
-    .replace(/<p class="note" aria-hidden="true">\/\/ [^<]*<\/p>/, `<p class="note" aria-hidden="true">// ${tagline}</p>`);
+  const idx = read("index.html")
+    .replace(/<title>[^<]*<\/title>/, () => `<title>${domain}</title>`)
+    .replace(/<meta name="description" content="[^"]*">/, () => `<meta name="description" content="${domain} — a quiet wall of code. ${tagline}">`)
+    .replace(/(<a class="brand"[^>]*>.*?<span>)[^<]*(<\/span><\/a>)/s, (_, start, end) => start + domain + end)
+    .replace(/<a href="https:\/\/github\.com\/[^"]*" rel="me">github<\/a>/, () => `<a href="${ghUrl}" rel="me">github</a>`)
+    .replace(/<h1 class="sr-only">[^<]*<\/h1>/, () => `<h1 class="sr-only">${domain} — ${tagline}</h1>`)
+    .replace(/<p class="note" aria-hidden="true">[^<]*<\/p>/, () => `<p class="note" aria-hidden="true">// ${tagline}</p>`);
   write("index.html", idx);
 
   // site/index.html
@@ -76,11 +73,6 @@ function syncIdentity() {
     .replace(/<h1 class="sr-only">[^<]*<\/h1>/, `<h1 class="sr-only">${domain} — work, projects, events and themes.</h1>`)
     .replace(/<span class="bar-title">[^<]*<\/span>/, `<span class="bar-title">${barTitle}</span>`);
   write("site/index.html", sIdx);
-
-  // glimpse.js
-  let glimpse = read("glimpse.js");
-  glimpse = glimpse.replace(/const NOTE_TEXT = "[^"]*";/, `const NOTE_TEXT = "// ${ID.tagline.replace(/"/g, '\\"')}";`);
-  write("glimpse.js", glimpse);
 
   // site/terminal.js
   let term = read("site/terminal.js");
